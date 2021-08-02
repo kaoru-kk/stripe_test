@@ -1,0 +1,97 @@
+<form action="/subscriptions/create_customer" method="post" id="payment-form">
+
+  <% @products.each do |product| %>
+    <hr>
+    <p>id: <%= product.id %></p>
+    <p>name: <%= product.name %></p>
+    <p>description: <%= product.description %></p>
+
+    <% product.images.each do |image| %>
+      <img src="<%= image %>" width="200" height="200">
+    <% end %>
+    
+    <%# 絶対もっといいやり方ある（商品にひもづくpriceのデータ取得） %>
+    <% if product.id == 'prod_Jh0W8hKqC39NgZ' %>
+      <input type="radio" value="price_1J3cVYJGav40kD8bDwvmDwkD" name='subscription_price'>
+    <% elsif product.id == 'prod_Jh0VAlOedgYBZs' %>
+      <input type="radio" value="price_1J3cUSJGav40kD8bAJGVnfM6" name='subscription_price'>
+    <% end %>
+    <hr>
+    <input type="hidden" name="user_id" value="<%= current_user.id %>">
+  <% end %>
+
+  <div id="card-element">
+  </div>
+
+  <div id="card-element-errors" role="alert"></div>
+  <button type="submit">Subscribe</button>
+</form>
+
+
+<hr>
+<!-- 会員登録後、メールでこのリンクから契約してもらうのもあり？うまく使えるかも -->
+<a href='https://buy.stripe.com/test_4gw4jb14vcUCcZqdQQ'>
+  stripeの決済ページからもできる
+</a>
+
+
+<script>
+let stripe = Stripe('<%= ENV('STRIPE_PUB_KEY') %>');
+let elements = stripe.elements();
+
+let style = {
+  base: {
+    // ここでStyleの調整
+    fontSize: '16px',
+    color: "#32325d",
+  }
+};
+
+let card = elements.create('card', {style: style, hidePostalCode: true});
+card.mount('#card-element');
+
+// 入力中に検証
+card.on('change', function (event) {
+  displayError(event);
+});
+function displayError(event) {
+  changeLoadingStatePrices(false);
+  let displayError = document.getElementById('card-element-errors');
+  if (event.error) {
+    displayError.textContent = event.error.message;
+  } else {
+    displayError.textContent = '';
+  }
+}
+
+
+let form = document.getElementById('payment-form');
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  stripe.createToken(card).then(function(result) {
+    if (result.error) {
+      // エラー表示.
+      let errorElement = document.getElementById('card-errors');
+      errorElement.textContent = result.error.message;
+    } else {
+      // トークンをサーバに送信
+      stripeTokenHandler(result.token);
+    }
+  });
+});
+
+function stripeTokenHandler(token) {
+  // tokenをフォームへ包含し送信
+  let form = document.getElementById('payment-form');
+  let hiddenInput = document.createElement('input');
+  hiddenInput.setAttribute('type', 'hidden');
+  hiddenInput.setAttribute('name', 'stripeToken');
+  hiddenInput.setAttribute('value', token.id);
+  form.appendChild(hiddenInput);
+
+  // Submit します
+  form.submit();
+}
+
+</script>

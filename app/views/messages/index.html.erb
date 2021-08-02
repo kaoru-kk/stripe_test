@@ -1,0 +1,16 @@
+<form>
+  <label>Say something:</label><br>
+  <input type="text" data-behavior="room_speaker">
+</form>
+
+
+<h3>mini-talk-app</h3>
+<%= form_with model: @message do |f| %>
+  <%= f.text_field :text %>
+  <%= f.submit '送信' %>
+<% end %>
+<div id="messages">
+  <% @messages.reverse_each.each do |message| %>
+    <p><%= message.id %> | <%= message.text %></p>
+  <% end %>
+</div>

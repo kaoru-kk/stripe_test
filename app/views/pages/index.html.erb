@@ -1,0 +1,28 @@
+<% if current_user != nil %>
+  <% if current_user.subscription_id %>
+    <p style='color: red;'>サブスク登録完了！</p>
+    <p>毎月画像が送られてくるよ！</p>
+  <% else %>
+    <%= link_to "りくいぬのサブスク", subscriptions_new_path %>
+    <%= link_to "まろすけのサブスク", subscriptions_new_maro_path %>
+  <% end %>
+
+  <h1>login user info</h1>
+  <hr >
+  <p>id:<%= current_user.id %></p>
+  <p>email:<%= current_user.email %></p>
+  <p>stripe_id:<%= current_user.stripe_id %></p>
+  <p>subscription_id:<%= current_user.subscription_id %></p>
+  <hr >
+<% end %>
+
+<h1>all users</h1>
+<% @users.each do |user| %>
+  <hr >
+  <p>id:<%= user.id %></p>
+  <p>email:<%= user.email %></p>
+  <p>stripe_id:<%= user.stripe_id %></p>
+  <p>subscription_id:<%= user.subscription_id %></p>
+
+  <hr >
+<% end %>

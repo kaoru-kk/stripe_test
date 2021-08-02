@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>StripteTest</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <% if user_signed_in? %>
+          <strong>Login account : <%= current_user.email %></strong>
+          <strong><%= link_to "Home", root_path %></strong>
+          <%= link_to 'ログアウト', destroy_user_session_path, method: :delete %>
+        <% else %>
+          <%= link_to 'サインアップ', new_user_registration_path %>
+          <%= link_to 'ログイン', new_user_session_path %>
+        <% end %>
+      </nav>
+    </header>
+    <%= yield %>
+  </body>
+</html>
